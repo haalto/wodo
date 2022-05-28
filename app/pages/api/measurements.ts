@@ -1,16 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
 import {
   createNewMeasurement,
   getMeasurementsByEmail,
 } from "../../lib/measurementServices";
-
-type Measurement = {
-  id: string;
-  email: string;
-  timestamp: string;
-  weight: number;
-};
+import { Measurement } from "../../types/types";
 
 type Error = {
   message: string;
@@ -20,14 +14,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Measurement[] | Measurement | Error>
 ) {
-  const session = await getSession({ req });
+  console.log(req.headers);
+  const secret = process.env.JWT_SECRET || "kissasanoomau";
 
-  if (!session) {
+  const token = await getToken({ req, secret });
+
+  console.log(token);
+  if (!token) {
     res.status(401).json({ message: "Not authenticated" });
     return;
   }
 
-  const email = session?.user?.email;
+  const email = token.email;
 
   if (!email) {
     res.status(400).json({ message: "Email not included in session" });
