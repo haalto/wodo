@@ -7,6 +7,7 @@ import { useMeasurements } from "../hooks/api/useMeasurements";
 import { Measurement, NewMeasurement } from "../types/types";
 import { Chart } from "react-chartjs-2";
 import chartTrendline from "chartjs-plugin-trendline";
+import "chart.js/auto";
 import {
   Chart as ChartJS,
   CategoryScale,
