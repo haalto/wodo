@@ -1,31 +1,20 @@
 type Props = {
-  value: number | string;
-  onSave: (value: number | string) => void;
+  value: string;
+  onSave: (value: string) => void;
 };
 
 export const WeightInput: React.FC<Props> = ({ onSave, value }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsedValue = parseFloat(e.target.value);
+    const value = e.target.value;
 
-    if (isNaN(parsedValue)) {
-      return onSave("");
+    if (!value || value.match(/^\d{1,}(\.\d{0,4})?$/)) {
+      onSave(value);
     }
-
-    if (parsedValue < 0) {
-      return onSave("");
-    }
-
-    onSave(parsedValue);
   };
 
   return (
     <div>
-      <input
-        type="number"
-        min="0"
-        value={value}
-        onChange={handleChange}
-      ></input>
+      <input type="text" value={value} onChange={handleChange}></input>
     </div>
   );
 };

@@ -14,12 +14,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Measurement[] | Measurement | Error>
 ) {
-  console.log(req.headers);
   const secret = process.env.JWT_SECRET || "kissasanoomau";
 
   const token = await getToken({ req, secret });
 
-  console.log(token);
   if (!token) {
     res.status(401).json({ message: "Not authenticated" });
     return;

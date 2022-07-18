@@ -3,18 +3,20 @@ import { WeightInput } from "./WeightInput";
 
 type Props = {
   onSubmit: (value: number) => void;
+  initialValue: string;
 };
 
-export const WeightForm: React.FC<Props> = ({ onSubmit }) => {
-  const [weight, setWeight] = useState<number | string>("");
+export const WeightForm: React.FC<Props> = ({ onSubmit, initialValue }) => {
+  const [weight, setWeight] = useState<string>(initialValue);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (typeof weight === "string") {
+    const parsedWeight = parseFloat(weight);
+    if (typeof parsedWeight === "string") {
       return;
     }
-    onSubmit(weight);
+    onSubmit(parsedWeight);
+    setWeight("");
   };
 
   return (
