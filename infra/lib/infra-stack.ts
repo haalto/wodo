@@ -1,19 +1,15 @@
-import { Duration, Stack, StackProps } from "aws-cdk-lib";
-import * as sns from "aws-cdk-lib/aws-sns";
-import * as subs from "aws-cdk-lib/aws-sns-subscriptions";
-import * as sqs from "aws-cdk-lib/aws-sqs";
+import { Stack, StackProps } from "aws-cdk-lib";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import { Construct } from "constructs";
 
 export class InfraStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const queue = new sqs.Queue(this, "InfraQueue", {
-      visibilityTimeout: Duration.seconds(300),
+    const dynamoTable = new dynamodb.Table(this, "WodoTable", {
+      partitionKey: { name: "PK", type: dynamodb.AttributeType.STRING },
+      sortKey: { name: "SK", type: dynamodb.AttributeType.STRING },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     });
-
-    const topic = new sns.Topic(this, "InfraTopic");
-
-    topic.addSubscription(new subs.SqsSubscription(queue));
   }
 }
