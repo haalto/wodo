@@ -3,7 +3,7 @@ import { Measurement } from "../../types/types";
 import { getMeasurements } from "./api";
 
 const validateMeasurement = (measurement: Measurement) => {
-  return !!measurement.weight && measurement.timestamp;
+  return !!measurement.weight && measurement.date;
 };
 
 export const useMeasurements = () => {

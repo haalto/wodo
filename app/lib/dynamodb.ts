@@ -1,8 +1,9 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { Table } from "dynamodb-toolbox";
+import DynamoDB from "aws-sdk/clients/dynamodb";
 
-const client = new DynamoDB({
-  endpoint: process.env.DYNAMODB_URL,
+const wodoTable = process.env.DYNAMODB_TABLE || "WodoTable";
+
+export const client = new DynamoDB.DocumentClient({
   region: process.env.REGION || "eu-north-1",
   credentials: {
     accessKeyId: process.env.ACCESS_KEY_ID || "",
@@ -10,6 +11,14 @@ const client = new DynamoDB({
   },
 });
 
-const docClient = DynamoDBDocumentClient.from(client);
+export const WodoTable = new Table({
+  // Specify table name (used by DynamoDB)
+  name: wodoTable,
 
-export default docClient;
+  // Define partition and sort keys
+  partitionKey: "PK",
+  sortKey: "SK",
+
+  // Add the DocumentClient
+  DocumentClient: client,
+});

@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
-import {
-  createNewMeasurement,
-  getMeasurementsByEmail,
-} from "../../lib/measurementServices";
-import { Measurement } from "../../types/types";
+import { v4 } from "uuid";
+import { Measurement } from "../../lib/Measurement";
 
 type Error = {
   message: string;
@@ -12,7 +9,7 @@ type Error = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Measurement[] | Measurement | Error>
+  res: NextApiResponse<any[] | any | Error>
 ) {
   const secret = process.env.JWT_SECRET || "kissasanoomau";
 
@@ -42,20 +39,26 @@ export default async function handler(
 
 const list =
   (req: NextApiRequest, res: NextApiResponse) => async (email: string) => {
-    const result = await getMeasurementsByEmail(email);
-    res.status(200).json(result as Measurement[]);
+    const { Items } = await Measurement.query(email, {
+      filters: { attr: "entity", eq: "Measurement" },
+    });
+    res.status(200).json(Items);
   };
 
 const create =
   (req: NextApiRequest, res: NextApiResponse) => async (email: string) => {
-    const { weight } = req.body;
+    const { weight, date } = req.body;
     if (!weight) {
       res.status(400).json({ message: "Weight not included in request" });
       return;
     }
-    const success = await createNewMeasurement(email, weight);
-    if (!success) {
+
+    try {
+      const id = v4();
+      await Measurement.put({ email, weight, sk: [date, id], date, id });
+      res.status(200).json({ message: "Successfully created measurement" });
+    } catch (e) {
+      console.error(e);
       res.status(500).json({ message: "Failed to create measurement" });
     }
-    res.status(200).json({ message: "Successfully created measurement" });
   };

@@ -1,7 +1,7 @@
 export type Measurement = {
   id: string;
   email: string;
-  timestamp: string;
+  date: string;
   weight: number;
 };
 
